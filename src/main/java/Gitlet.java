@@ -343,14 +343,6 @@ public class Gitlet implements Serializable {
         }
     }
 
-    private void addRemote(String remoteName, String userName, String server, String location) {
-
-    }
-
-    private void removeRemote(String remoteName) {
-
-    }
-
     private void push(String remoteName, String remoteBranchName) {
 
     }
@@ -455,9 +447,6 @@ public class Gitlet implements Serializable {
             case "i-rebase":
                 gitlet.rebase(args[1], true);
                 break;
-            case "rm-remote":
-                gitlet.removeRemote(args[1]);
-                break;
             case "clone":
                 gitlet.clone(args[1]);
                 break;
@@ -490,19 +479,6 @@ public class Gitlet implements Serializable {
         }
     }
 
-    /**
-     * Handles commands that have four arguments.
-     */
-    private static void fourArguments(Gitlet gitlet, String[] args) {
-        switch (args[0]) {
-            case "add-remote":
-                gitlet.addRemote(args[1], args[2], args[3], args[4]);
-                break;
-            default:
-                System.out.println(Messages.INVALID_COMMAND);
-                break;
-        }
-    }
 
     /**
      * Main entrance to the version control system.
@@ -521,9 +497,7 @@ public class Gitlet implements Serializable {
                     oneArgument(gitlet, args);
                 } else if (args.length == 3) {
                     twoAruments(gitlet, args);
-                } else if (args.length == 5) {
-                    fourArguments(gitlet, args);
-                } else {
+                }  else {
                     System.out.println(Messages.WRONG_ARGUMENT_LENGTH);
                 }
             }

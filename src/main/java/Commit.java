@@ -252,7 +252,7 @@ class Commit implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         System.out.println("====");
         System.out.println("Commit " + String.valueOf(id) + ".");
-        System.out.println(dateFormat.format(timestamp.getTime())+" by "+branchName);
+        System.out.println(dateFormat.format(timestamp.getTime())+" "+branchName);
         System.out.println(message);
         if (parent != null) {
             System.out.println();

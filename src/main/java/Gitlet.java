@@ -1,14 +1,8 @@
-import java.util.Scanner;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Stack;
-import java.io.Serializable;
 import java.io.IOException;
-import java.io.ObjectStreamException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Class that represent a git-like version control system. It provides a set
@@ -507,7 +501,7 @@ public class Gitlet implements Serializable {
     /**
      * Main entrance to the version control system.
      */
-    public static void main(String[] args) { 
+    public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println(Messages.ARGUMENT_MISSING);
         } else {

@@ -1,22 +1,14 @@
-import java.util.Scanner;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Stack;
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.activation.CommandMap;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
- * Class that represent a git-like version control system. It provides a set
- * of methods for performing actions with the version control system.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 public class Gitlet implements Serializable {
 
     private List<Commit> commits;                    // A list of all commits
@@ -138,6 +130,9 @@ public class Gitlet implements Serializable {
      * present, regardless of whether the commits are on current branch. 
      */
     private void globalLog() {
+
+        File file=new File("gitlet/myfile.csv");
+        file.delete();
         for (int i = commits.size()-1; i >= 0; i--) {
             commits.get(i).print();
         }
@@ -284,63 +279,96 @@ public class Gitlet implements Serializable {
         }
     }
 
-    /**
-     * Rebases the head of current branch to the given branch. Part of history
-     * tree will be copied and append to head of given branch. 
-     */
-    private void rebase(String branchName, boolean interactive) {
-        if (!branches.containsKey(branchName)) {
-            System.out.println(Messages.CANNOT_FIND_BRANCH);
-        } else if (branchName.equals(currentBranch.name)) {
-            System.out.println(Messages.CANNOT_REBASE_SELF);
-        } else {
-            Branch branch = branches.get(branchName);
-            if (branch.head == currentBranch.head) {
-                System.out.println(Messages.UP_TO_DATE);
-            } else if (warnUser()) {
-                if (currentBranch.head.isInBranch(branch)) {
-                    currentBranch.head = branch.head;
-                } else {
-                    Commit split = Commit.firstCommonAncestor(currentBranch.head, branch.head);
-                    Stack<Commit> ancestors = currentBranch.head.getAncestorsStopAt(split);
-                    currentBranch.head = branch.head;
-                    while (!ancestors.isEmpty()) {
-                        Commit commit = ancestors.pop();
-                        Commit copy = Commit.clone(commits.size(), commit);
-                        if (!interactive || (interactive && iRebase(copy))) {
-                            copy.mergeFrom(currentBranch.head, false);
-                            copy.parent = currentBranch.head;
-                            currentBranch.head = copy;
-                            addCommitToMap(copy);
-                            commits.add(copy);
+
+    private void compare_branches(Gitlet gitlet){
+        gitlet.globalLog();
+
+        String line = "";
+        HashSet<String> set=new HashSet();
+
+
+        try {
+            BufferedReader br=new BufferedReader((new FileReader("gitlet/myfile.csv")));
+
+            ArrayList<CommitDetails> commitDetails=new ArrayList<>();
+
+            while ((line = br.readLine()) != null) {
+                String[] data=line.split(",");
+                String[] dateAndTime=data[0].split(" ");
+
+                DateFormat df = new SimpleDateFormat("YYYY/MM/dd kk:mm:ss", Locale.ENGLISH);
+
+                CommitDetails commitDetailsData=null;
+                try {
+                    df.parse(data[0]);
+                    commitDetailsData=new CommitDetails(df.parse(data[0]),data[1],data[2]);
+                    commitDetails.add(commitDetailsData);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                set.add(data[1]);
+            }
+
+
+            ProductivityMeasure[] productivityMeasure=new ProductivityMeasure[set.size()];
+            int p=0;
+            for(String s:set){
+                productivityMeasure[p] = new ProductivityMeasure();
+                productivityMeasure[p].setBranchname(s);
+
+                for(int i=0;i<commitDetails.size();i++) {
+                    if (s.equals(commitDetails.get(i).branch)) {
+                        productivityMeasure[p].increaseCommits();
+
+
+                        for (int j = i + 1; j < commitDetails.size(); j++) {
+                            if (s.equals(commitDetails.get(j).branch)) {
+                                Date date1 = commitDetails.get(i).getCommitedDate();
+                                Date date2 = commitDetails.get(j).getCommitedDate();
+
+                                String data1 = commitDetails.get(i).getMessage();
+                                String data2 = commitDetails.get(i).getMessage();
+
+                                int minDatalength = 0;
+                                if (data1.length() < data2.length())
+                                    minDatalength = data1.length();
+                                else
+                                    minDatalength = data2.length();
+
+
+                                int distanceLenght = LevenshteinDistance.computeDistance(data1, data2);
+                                double ratio = distanceLenght / minDatalength * 1.0;
+
+                                if (ratio > 0.5 && date1.getTime() - date2.getTime() < 120000) {
+                                    productivityMeasure[p].commitIncreament();
+                                } else if (ratio <= 0.5 && date1.getTime() - date2.getTime() < 120000) {
+                                    productivityMeasure[p].commitDeduction();
+                                }
+
+                                if (date1.getTime() - date2.getTime() > 840000 && ratio > 0.5) {
+                                    productivityMeasure[p].commitDeduction();
+                                } else if (date1.getTime() - date2.getTime() > 840000 && ratio < 0.5) {
+                                    productivityMeasure[p].commitIncreament();
+                                }
+                            }
+
                         }
                     }
                 }
-                currentBranch.head.restoreAllFiles();
-                this.save();
-            }
-        }
-    }
+                System.out.println(s+"  "+productivityMeasure[p].getScore());
+               p++;
 
-    private boolean iRebase(Commit commit) {
-        System.out.println(Messages.REPLAYING);
-        commit.print();
-        while (true) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println(Messages.REBASE_PROMPT);
-            while (!sc.hasNext()) {}
-            String choise = sc.next().toUpperCase();
-            if (choise.equals("C")) {
-                return true;
-            } else if (choise.equals("S")) {
-                return false;
-            } else if (choise.equals("M")) {
-                System.out.println(Messages.REBASE_COMMIT);
-                while (!sc.hasNextLine()) {}
-                commit.message = sc.next();
-                return true;
             }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
     }
 
     private void push(String remoteName, String remoteBranchName) {
@@ -406,6 +434,9 @@ public class Gitlet implements Serializable {
             case "commit": // for error handling (in case user did not enter message)
                 gitlet.commit("");
                 break;
+            case "compare":
+                gitlet.compare_branches(gitlet);
+                break;
             default:
                 System.out.println(Messages.INVALID_COMMAND);
                 break;
@@ -440,12 +471,6 @@ public class Gitlet implements Serializable {
                 break;
             case "merge":
                 gitlet.merge(args[1]);
-                break;
-            case "rebase":
-                gitlet.rebase(args[1], false);
-                break;
-            case "i-rebase":
-                gitlet.rebase(args[1], true);
                 break;
             case "clone":
                 gitlet.clone(args[1]);
@@ -483,7 +508,7 @@ public class Gitlet implements Serializable {
     /**
      * Main entrance to the version control system.
      */
-    public static void main(String[] args) { 
+    public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println(Messages.ARGUMENT_MISSING);
         } else {

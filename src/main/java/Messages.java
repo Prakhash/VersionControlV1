@@ -1,10 +1,8 @@
+
 /**
- * Class that stores a number of error messages that would be used while interacting
- * with users who are utilizing the version control system.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 class Messages {
     
     public static final String DANGEROURS =
@@ -74,12 +72,6 @@ class Messages {
 
     public static final String REPLAYING =
     "Currently replaying:";
-
-    public static final String REBASE_PROMPT =
-    "Would you like to (c)ontinue, (s)kip this commit, or change this commit's (m)essage?";
-
-    public static final String REBASE_COMMIT =
-    "Please enter a new message for this commit.";
 
     public static final String REMOTE_EXIST =
     "A remote with that name already exists.";

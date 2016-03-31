@@ -1,26 +1,13 @@
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Stack;
-import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.util.Calendar;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.util.*;
 
 /**
- * Class that represent a commit in version control system. It also provides
- * some methods for performing actions with commits.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 class Commit implements Serializable {
+    public String branchName;
     public int id;                                   // Commit ID
     public String message;                           // Commit message
     public Commit parent;                            // Parent commit
@@ -31,6 +18,21 @@ class Commit implements Serializable {
     /**
      * Constructs a new commit given commit data.
      */
+    public Commit(int commit_id, String m, Commit p, Map<String, FileInfo> f,String branchName) {
+        this.branchName=branchName;
+        id = commit_id;
+        message = m;
+        parent = p;
+        files = f;
+        timestamp = Calendar.getInstance();
+        numChildren = 0;
+
+        Util.createDirectory(getCommitPath());
+        Util.createDirectory(getCommitPath() + "/files");
+
+        save();
+    }
+
     public Commit(int commit_id, String m, Commit p, Map<String, FileInfo> f) {
         id = commit_id;
         message = m;
@@ -49,7 +51,7 @@ class Commit implements Serializable {
      * Constructs a normal new commit and performs the corresponding actions.
      */
     public Commit(int commit_id, String m, Branch b) {
-        this(commit_id, m, b.head, b.head == null ? new HashMap<String, FileInfo>() : b.head.getFiles());
+        this(commit_id, m, b.head, b.head == null ? new HashMap<String, FileInfo>() : b.head.getFiles(),b.name);
 
         for (String fileName : b.getAddFiles()) {
             FileInfo file = new FileInfo(fileName, id);
@@ -244,10 +246,46 @@ class Commit implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         System.out.println("====");
         System.out.println("Commit " + String.valueOf(id) + ".");
-        System.out.println(dateFormat.format(timestamp.getTime()));
+        System.out.println(dateFormat.format(timestamp.getTime())+" "+branchName);
         System.out.println(message);
         if (parent != null) {
             System.out.println();
+        }
+
+        FileWriter writer=null;
+        PrintWriter out=null;
+
+        File f = new File("gitlet/myfile.csv");
+        if(!f.exists() && !f.isDirectory()) {
+//            try {
+//                writer=new FileWriter("gitlet/myfile.csv", true);
+//                out = new PrintWriter(writer);
+//                out.print("Date_Time");
+//                out.print(",");
+//                out.print("Branch_Name");
+//                out.print(",");
+//                out.print("message");
+//                out.print("\n");
+//                out.flush();
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+        }
+
+
+        try {
+            writer=new FileWriter("gitlet/myfile.csv", true);
+            out = new PrintWriter(writer);
+            out.print(dateFormat.format(timestamp.getTime()).toString());
+            out.print(",");
+            out.print(branchName);
+            out.print(",");
+            out.print(message);
+            out.print("\n");
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -265,4 +303,5 @@ class Commit implements Serializable {
         throws IOException, ClassNotFoundException {
         in.defaultReadObject();
     }
+
 }

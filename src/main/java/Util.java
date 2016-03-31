@@ -13,12 +13,9 @@ import java.security.MessageDigest;
 import java.security.DigestInputStream;
 
 /**
- * Class that provides a number of utility functions that support the version
- * control system.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 class Util {
 
     /**

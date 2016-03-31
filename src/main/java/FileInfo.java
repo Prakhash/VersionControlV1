@@ -15,12 +15,9 @@ import java.security.MessageDigest;
 import java.security.DigestInputStream;
 
 /**
- * Class that represent a file in version control system. It also provides
- * some methods for performing actions with files.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 class FileInfo implements Serializable {
     public String path;                              // Path and file name
     public String md5;                               // MD5 hash of the file

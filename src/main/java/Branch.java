@@ -9,12 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 /**
- * Class that represent a branch in version control system. It also provides
- * some methods for performing actions with branches.
- * 
- * @author Prakhash
- * 
+ * Created by prakhash on 22/03/16.
  */
+
 class Branch implements Serializable {
     public String name;                              // Branch name
     public Commit head;                              // Head commit of the branch

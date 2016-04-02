@@ -1,0 +1,18 @@
+switch(expression){
+    case value :
+       //Statements
+       break; //optional
+    case value :
+       //Statements
+      //optional
+
+
+
+}
+
+system.out(0);
+
+System.out.println("sbsns\nhfhfh");
+
+if ((...) & 0) == 0
+if ((sssssssssss77777) & 0) == 0

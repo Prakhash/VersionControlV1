@@ -1,4 +1,5 @@
-import javax.activation.CommandMap;
+import validation.Validation;
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -16,7 +17,7 @@ public class Gitlet implements Serializable {
     private Map<String, Remote> remotes;             // A collection of all remotes
     private Map<String, List<Commit>> msgToCommit;   // A mapping from commit messages to commits
     private Branch currentBranch;                    // Current branch
-
+private Validation validation=new Validation();
     /* Constants that are used in this class */
     public static final String GITLET_DIR = "./gitlet";
     public static final String BRANCH_DIR = GITLET_DIR + "/branches";
@@ -79,6 +80,7 @@ public class Gitlet implements Serializable {
         } else if (!currentBranch.head.fileChanged(fileName)) {
             System.out.println(Messages.FILE_UNCHANGED);
         } else {
+            validation.validate(new File(fileName));
             currentBranch.markAddFile(fileName);
         }
     }

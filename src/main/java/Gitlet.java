@@ -85,7 +85,6 @@ private Validation validation=new Validation();
         }
     }
 
-
     /**
      * Performs a commit action. All files marked to be added will be
      * copied over to the version control system folders.

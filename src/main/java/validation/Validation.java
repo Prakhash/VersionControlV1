@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Created by bruntha on 3/31/16.
  */
-public class Validation {
+public class Validation implements Serializable {
     //Method invokes System.exit(...)
     public boolean checkDM1(String line) {
         boolean result = false;

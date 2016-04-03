@@ -36,7 +36,7 @@ public class Test {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("switch.txt").getFile());
 
-        validation.validate(file);
-//        System.out.println(validation.checkSF1(file));
+
+        System.out.println(validation.checkIIL1(file));
     }
 }

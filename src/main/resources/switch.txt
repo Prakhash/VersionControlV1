@@ -10,9 +10,37 @@ switch(expression){
 
 }
 
+while( x < 20 ) {
+         System.out.print("value of x : " + x );
+         x++;
+         System.out.print("\n");
+
+      }
+
+do{
+         System.out.print("value of x : " + x );
+         x++;
+                  NodeList.getLength();
+
+         System.out.print("\n");
+      }while( x < 20 );
+
+/*
 system.out(0);
 
 System.out.println("sbsns\nhfhfh");
-
+*/
 if ((...) & 0) == 0
 if ((sssssssssss77777) & 0) == 0
+
+for(declaration : expression)
+{
+wwww
+   //Statements
+            NodeList.getLength();
+
+}
+
+
+
+
